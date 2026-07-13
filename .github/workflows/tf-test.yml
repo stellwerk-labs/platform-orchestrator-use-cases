@@ -1,0 +1,64 @@
+name: Terraform/OpenTofu validation and test
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches: [ main ]
+# Remove comment to enable manual trigger
+  # workflow_dispatch:
+
+jobs:
+  terraform-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.x"
+
+      - name: Setup Terraform Docs
+        if: ${{ github.event.pull_request }}
+        run: |
+          export TERRAFORM_DOCS_RELEASE=$(gh release list -R terraform-docs/terraform-docs --json name,isLatest --jq '.[] | select(.isLatest)|.name')
+          curl -Lo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${TERRAFORM_DOCS_RELEASE}/terraform-docs-${TERRAFORM_DOCS_RELEASE}-linux-amd64.tar.gz
+          tar -xzf terraform-docs.tar.gz
+          chmod +x terraform-docs
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Find and test Terraform modules
+        run: |
+          chmod +x .github/scripts/tf-test.sh
+          .github/scripts/tf-test.sh
+        env:
+          TF_TOOL: terraform
+          DO_TF_DOCS: ${{ github.event.pull_request && 'true' || 'false' }}
+          DO_TF_FORMAT: "true"
+
+  opentofu-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
+      - name: Find and test OpenTofu modules
+        run: |
+          chmod +x .github/scripts/tf-test.sh
+          .github/scripts/tf-test.sh
+        env:
+          TF_TOOL: "tofu"
+          DO_TF_DOCS: "false"
+          DO_TF_FORMAT: "false"

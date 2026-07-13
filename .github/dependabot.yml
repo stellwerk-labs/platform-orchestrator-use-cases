@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    # Disable updates except for vulnerabilities
+    open-pull-requests-limit: 0
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "build"
+      include: "scope"
