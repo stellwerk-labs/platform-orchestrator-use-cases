@@ -379,14 +379,14 @@ The module creates an IAM policy that grants the ECS runner the following permis
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.54.0 |
-| <a name="provider_platform-orchestrator"></a> [platform-orchestrator](#provider\_platform-orchestrator) | 1.0.0 |
+| <a name="provider_platform-orchestrator"></a> [platform-orchestrator](#provider\_platform-orchestrator) | 1.0.1 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.9.0 |
 
 ## Modules
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
-| <a name="module_ecs_runner"></a> [ecs\_runner](#module\_ecs\_runner) | github.com/stellwerk-tf-modules/serverless-ecs-orchestrator-runner | v1.1.0 |
+| <a name="module_ecs_runner"></a> [ecs\_runner](#module\_ecs\_runner) | github.com/stellwerk-tf-modules/serverless-ecs-orchestrator-runner | v2.0.0 |
 
 ## Resources
 

@@ -8,7 +8,7 @@ resource "platform-orchestrator_project" "this" {
 ## ECS Runner
 
 module "ecs_runner" {
-  source = "github.com/stellwerk-tf-modules/serverless-ecs-orchestrator-runner?ref=v1.1.0"
+  source = "github.com/stellwerk-tf-modules/serverless-ecs-orchestrator-runner?ref=v2.0.0"
 
   region                     = var.aws_region
   runner_id                  = var.ecs_runner_id
@@ -16,7 +16,7 @@ module "ecs_runner" {
   existing_ecs_cluster_name  = var.ecs_runner_cluster_name
   subnet_ids                 = var.ecs_runner_subnet_ids
   security_group_ids         = var.ecs_runner_security_group_ids
-  humanitec_org_id           = var.org_id
+  orchestrator_org_id        = var.org_id
   oidc_hostname              = var.oidc_hostname
   existing_oidc_provider_arn = var.existing_oidc_provider_arn
   environment                = var.ecs_runner_environment
