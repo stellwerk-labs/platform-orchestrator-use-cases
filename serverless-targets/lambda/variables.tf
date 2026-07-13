@@ -76,9 +76,8 @@ variable "ecs_runner_force_delete_s3" {
 }
 
 variable "oidc_hostname" {
-  description = "OIDC hostname for authentication"
+  description = "Hostname of the OIDC issuer exposed by your Platform Orchestrator installation"
   type        = string
-  default     = "oidc.stellwerk.dev"
 }
 
 variable "existing_oidc_provider_arn" {
