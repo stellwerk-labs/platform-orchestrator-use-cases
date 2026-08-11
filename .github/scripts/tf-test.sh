@@ -44,4 +44,4 @@ while IFS= read -r -d '' main_tf_file; do
   # Return to workspace root
   cd "$GITHUB_WORKSPACE"
 
-done < <(find . -name "main.tf" -type f -print0)
+done < <(find . -type d -name .terraform -prune -o -name "main.tf" -type f -print0)

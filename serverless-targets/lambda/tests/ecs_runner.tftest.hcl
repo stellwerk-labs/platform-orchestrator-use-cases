@@ -41,6 +41,11 @@ mock_provider "random" {
   }
 }
 
+variables {
+  ecs_runner_nats_url              = "tls://nats.example.test:4222"
+  ecs_runner_nats_token_secret_arn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:nats-token-AbCdEf"
+}
+
 run "ecs_runner_with_custom_id" {
   command = plan
 
@@ -210,6 +215,11 @@ run "ecs_runner_default_values" {
   }
 
   assert {
+    condition     = var.ecs_runner_nats_token_kms_key_arn == null
+    error_message = "Default ecs_runner_nats_token_kms_key_arn should be null"
+  }
+
+  assert {
     condition     = var.ecs_runner_force_delete_s3 == true
     error_message = "Default ecs_runner_force_delete_s3 should be true"
   }
@@ -232,8 +242,9 @@ run "ecs_runner_with_all_custom_options" {
     existing_oidc_provider_arn = "arn:aws:iam::123456789012:oidc-provider/test-oidc.example.com"
 
     # All custom options
-    ecs_runner_id              = "my-runner"
-    ecs_runner_force_delete_s3 = true
+    ecs_runner_id                     = "my-runner"
+    ecs_runner_force_delete_s3        = true
+    ecs_runner_nats_token_kms_key_arn = "arn:aws:kms:eu-central-1:123456789012:key/12345678-1234-1234-1234-123456789012"
     ecs_runner_environment = {
       APP_ENV = "production"
     }
@@ -262,4 +273,32 @@ run "ecs_runner_with_all_custom_options" {
     condition     = length(var.ecs_runner_secrets) == 1
     error_message = "Should have 1 secret"
   }
+
+  assert {
+    condition     = var.ecs_runner_nats_token_kms_key_arn == "arn:aws:kms:eu-central-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+    error_message = "Customer-managed NATS token KMS key ARN should be set"
+  }
+}
+
+run "ecs_runner_rejects_invalid_nats_token_kms_key_arn" {
+  command = plan
+
+  variables {
+    org_id                   = "test-org"
+    project_id_prefix        = "test-project"
+    env_id                   = "test"
+    lambda_package_s3_bucket = "test-lambda-packages"
+
+    ecs_runner_cluster_name       = "test-cluster"
+    ecs_runner_subnet_ids         = ["subnet-12345678"]
+    ecs_runner_security_group_ids = ["sg-12345678"]
+
+    oidc_hostname                     = "test-oidc.example.com"
+    existing_oidc_provider_arn        = "arn:aws:iam::123456789012:oidc-provider/test-oidc.example.com"
+    ecs_runner_nats_token_kms_key_arn = "arn:aws:kms:eu-central-1:123456789012:alias/runner-nats"
+  }
+
+  expect_failures = [
+    var.ecs_runner_nats_token_kms_key_arn,
+  ]
 }
