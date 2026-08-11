@@ -8,7 +8,7 @@ resource "platform-orchestrator_project" "this" {
 ## ECS Runner
 
 module "ecs_runner" {
-  source = "github.com/stellwerk-tf-modules/serverless-ecs-orchestrator-runner?ref=v3.0.0"
+  source = "github.com/stellwerk-tf-modules/serverless-ecs-orchestrator-runner?ref=v4.0.0"
 
   region                     = var.aws_region
   runner_id                  = var.ecs_runner_id
@@ -21,9 +21,6 @@ module "ecs_runner" {
   existing_oidc_provider_arn = var.existing_oidc_provider_arn
   environment                = var.ecs_runner_environment
   secrets                    = var.ecs_runner_secrets
-  nats_url                   = var.ecs_runner_nats_url
-  nats_token_secret_arn      = var.ecs_runner_nats_token_secret_arn
-  nats_token_kms_key_arn     = var.ecs_runner_nats_token_kms_key_arn
   force_delete_s3            = var.ecs_runner_force_delete_s3
   additional_tags = merge(
     {

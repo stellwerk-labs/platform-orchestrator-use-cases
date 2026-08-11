@@ -69,28 +69,6 @@ variable "ecs_runner_secrets" {
   default     = {}
 }
 
-variable "ecs_runner_nats_url" {
-  description = "TLS NATS endpoint reachable by ECS runner tasks"
-  type        = string
-}
-
-variable "ecs_runner_nats_token_secret_arn" {
-  description = "AWS Secrets Manager or SSM ARN containing the runner's NATS token"
-  type        = string
-}
-
-variable "ecs_runner_nats_token_kms_key_arn" {
-  description = "Optional customer-managed KMS key ARN used to encrypt the ECS runner's NATS token secret"
-  type        = string
-  default     = null
-  nullable    = true
-
-  validation {
-    condition     = var.ecs_runner_nats_token_kms_key_arn == null || can(regex("^arn:[^:]+:kms:[^:]+:[0-9]{12}:key/.+$", var.ecs_runner_nats_token_kms_key_arn))
-    error_message = "ecs_runner_nats_token_kms_key_arn must be a customer-managed KMS key ARN."
-  }
-}
-
 variable "ecs_runner_force_delete_s3" {
   description = "Force delete the ECS runner S3 state files bucket on destroy even if it's not empty"
   type        = bool
