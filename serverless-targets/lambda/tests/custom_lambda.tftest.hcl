@@ -42,8 +42,6 @@ mock_provider "random" {
 }
 
 variables {
-  ecs_runner_nats_url              = "tls://nats.example.test:4222"
-  ecs_runner_nats_token_secret_arn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:nats-token-AbCdEf"
 }
 
 run "custom_lambda_runtime" {
