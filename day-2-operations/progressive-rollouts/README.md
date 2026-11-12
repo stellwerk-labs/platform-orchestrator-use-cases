@@ -1,27 +1,45 @@
 # Progressive rollouts
 
-The Platform Orchestrator can rollout infrastructure updates gradually across your estate in controlled waves, providing full rollout control and progress visibilty.
+Progressive Rollouts is a commercial Stellwerk plugin for deploying Module Version changes across Environments in controlled waves.
 
-> ℹ️ **Note**
->
-> This use case is planned but not implemented yet.
+Updating a shared infrastructure Module can affect many applications. A database or network change that works in one Environment may still fail elsewhere. Progressive Rollouts lets platform teams select the target Environments, review the proposed changes and control how far each update proceeds.
 
-Platform teams need to evolve shared infrastructure components (such as database operators) without risking widespread outages. The Platform Orchestrator provides a controlled way to roll out new module versions across environments while limiting blast radius and preserving the ability to roll back quickly.
+## Prepare and review the change
 
-A typical rollout starts by creating a new version of a module that encapsulates the updated infrastructure behavior (for example, a new Terraform/OpenTofu module version wired via the Orchestrator’s module catalog). The platform team then uses the Orchestrator to apply this version selectively across environments, following a staged progression rather than updating everything at once. Environments can be ordered from lowest-risk to highest-risk (for example, ephemeral and development environments first, then staging, then production), leveraging the Orchestrator’s project/environment structure and promotion capabilities.
+Publish the candidate Module Version, then design a rollout using explicit Environments or Project, Environment Type and label selectors. Preview the targets and proposed changes before preparing the rollout.
 
-Each rollout “wave” is executed as a normal deployment, driven via CLI or CI/CD, which updates the resource graph and regenerates the Terraform/OpenTofu for that environment. Teams can use their existing observability stack (for example, metrics dashboards and alerts) to validate behavior after each wave before proceeding. If issues are detected, the Orchestrator’s rollback capabilities allow reverting a specific environment to a previous working deployment state, using the historic manifest and resource graph and the same module versions that were active at that time without affecting other environments still on older versions.
+Preparation freezes a plan revision and its target set. Review conflicts, Environment Pins and the planned deployment changes before starting. Approvals are tied to that plan revision and their Environment or Project scope, so an approval is not blanket permission for a different plan.
 
-This pattern enables:
+## Execute in waves
 
-- **Fine-grained control of blast radius** by scoping changes to selected environments or subsets of workloads
-- **Progressive rollout** of new infrastructure versions across the estate, aligned with environment progression practices
-- **Safe experimentation and fast remediation**, through a combination of deployment history, rollback, and repeatable module-based configuration
+Arrange targets into waves, for example development first, staging second and production last. Each wave can specify:
 
-## References
+- the Environments to update;
+- the maximum deployment concurrency;
+- required approvals;
+- a bake period before further progression; and
+- retry limits and manual or automatic progression.
 
-- [Platform Orchestrator Documentation](https://docs.stellwerk.dev/platform-orchestrator/)
-- [Platform Orchestrator Terraform Modules](https://github.com/stellwerk-tf-modules)
+The plugin starts ordinary Orchestrator deployments and records rollout progress and events. Default promotion is an explicit rollout policy. Starting a rollout does not mean every Environment changes at once.
+
+Use the bake period to inspect application behavior with your own observability tools. Automatic progression follows the configured policy; it does not provide automatic metric-based health analysis or automatic rollback.
+
+## Stop or recover deliberately
+
+Pause a rollout to stop new forward work, then resume when you are ready. Cancellation prevents further progression; it does not erase deployments already executed. Existing Environment Pins remain constraints, with any override requiring its own authorization.
+
+When recovery is needed, request an explicit rollback for an Environment or the rollout. A rollback is another infrastructure deployment, subject to retained material and the usual recovery limits. It is not a restore of lost application data.
+
+## Get Progressive Rollouts
+
+Progressive Rollouts is licensed separately. Contact [Stellwerk Labs](mailto:hello@stellwerk.dev?subject=Progressive%20Rollouts) for a demonstration, licensing and access to the plugin for your installation.
+
+## Further reading
+
+- [Impact analysis](https://docs.stellwerk.dev/platform-orchestrator/docs/use-cases/impact-analysis/)
+- [Module version management](https://docs.stellwerk.dev/platform-orchestrator/docs/configure/modules/module-version-management/)
+- [Environment version Pins](https://docs.stellwerk.dev/platform-orchestrator/docs/configure/modules/environment-version-pins/)
+- [Rollback](https://docs.stellwerk.dev/platform-orchestrator/docs/use-cases/rollback/)
 
 <!-- BEGIN_TF_DOCS -->
 

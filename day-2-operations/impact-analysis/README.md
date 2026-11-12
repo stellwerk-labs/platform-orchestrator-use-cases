@@ -1,26 +1,42 @@
 # Impact analysis
 
-The Platform Orchestrator can detect infrastructure drift on a resource level and pinpoint the impacted environments for a complete situation assessment.
+Use Module Version Management to find which Environments run an affected Module Version before deciding how to respond.
 
-> ℹ️ **Note**
->
-> This use case is planned but not implemented yet.
+Suppose a PostgreSQL Module Version has an incorrect access-control setting. You need to find the Environments using that version, compare it with a correction, and decide where to deploy first. The Orchestrator provides the version and deployment records for that investigation.
 
-Rollout management in the context of the Stellwerk Platform Orchestrator enables platform teams to safely and efficiently propagate infrastructure changes, such as security patches or configuration updates, across multiple environments. When a misconfiguration is detected in a shared module (for example, a module provisioning S3 buckets with incorrect access controls), the Orchestrator provides the ability to immediately assess the scope and impact of the issue.
+## Find affected Environments
 
-The Orchestrator’s impact analysis tools allow teams to visualize which workloads and environments are currently using the affected module version. This includes detailed insights into which environments are at risk, which are unaffected, and which teams are responsible for each workload. With this visibility, platform teams can:
+In the Console, open the Module catalogue and select the affected Version. Inspect its usage, lifecycle history and active Environment Pins. Usage reflects the latest trustworthy successful Deployment in each Environment, including when that evidence was observed.
 
-- Identify all affected environments and workloads using the problematic module version
-- Understand the exact scope (blast radius) of required updates, reducing uncertainty and manual investigation
-- Plan and execute targeted rollouts or forced updates, minimizing disruption and ensuring compliance
-- Maintain a clear audit trail of changes and updates across the platform
+You can also inspect usage and compare two published Versions with `octl`. Replace the example Module ID and versions with your own:
 
-By leveraging these capabilities, the Platform Orchestrator ensures that updates can be rolled out in a controlled and transparent manner, reducing the risk of widespread outages and enabling rapid incident response. This approach eliminates the need for manual repository checks or guesswork, providing a single source of truth for infrastructure state and change management.
+```shell
+octl get module-version-usage postgres 1.4.0
+octl get module-version-comparison postgres 1.4.0 1.4.1
+octl get module-version-history postgres 1.4.0
+```
 
-## References
+The comparison shows changes to the Module definition, such as inputs, dependencies and declared outputs. It helps you review a correction; it does not predict every cloud resource change or prove application compatibility. Use a plan-only deployment to inspect the proposed infrastructure actions for a particular Environment.
 
-- [Platform Orchestrator Documentation](https://docs.stellwerk.dev/platform-orchestrator/)
-- [Platform Orchestrator Terraform Modules](https://github.com/stellwerk-tf-modules)
+Treat unknown or stale usage as incomplete evidence. An Environment without a trustworthy deployment record cannot be assumed unaffected.
+
+## Choose a response
+
+Test the corrected Version before making it Default. Existing Environment Pins can keep their already-active Version while other Environments move forward. Changing a Default affects later version resolution; it does not update running infrastructure.
+
+If a Version is unsafe, marking it Defective blocks normal adoption. It does not repair Environments already using it or choose a replacement for them. Recovery still needs an explicit decision and deployment.
+
+## Coordinate the rollout
+
+The commercial **Progressive Rollouts** plugin adds a reviewed rollout plan: preview and freeze the selected Environments, arrange them into waves, set concurrency and approval policies, and control execution. It builds on the Orchestrator's Module Versions, deployment history and Pins.
+
+See [Progressive Rollouts](https://docs.stellwerk.dev/platform-orchestrator/docs/use-cases/progressive-rollouts/) for the plugin's capabilities and how to contact Stellwerk Labs.
+
+## Further reading
+
+- [Module version management](https://docs.stellwerk.dev/platform-orchestrator/docs/configure/modules/module-version-management/)
+- [Environment version Pins](https://docs.stellwerk.dev/platform-orchestrator/docs/configure/modules/environment-version-pins/)
+- [Deployments](https://docs.stellwerk.dev/platform-orchestrator/docs/deploy/deployments/)
 
 <!-- BEGIN_TF_DOCS -->
 
