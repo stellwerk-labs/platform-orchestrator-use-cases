@@ -17,8 +17,9 @@ Keep the manifest change and deployment history as the record of what you change
 
 ## Optional infrastructure cost estimates
 
-An upcoming coordinated update adds Infracost estimates to successful manual
-and Drift observation plan logs. The integration is unreleased.
+Infracost estimates are available in successful manual and Drift observation
+plan logs with Runner 3.3.0, Data Plane 4.4.0 and Console 1.7.0. Use the
+compatible platform release set before enabling estimates.
 
 An installation administrator supplies an Infracost API key and enables
 estimates under **Administration → Configuration → Infrastructure costs**.
