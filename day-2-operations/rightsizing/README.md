@@ -15,23 +15,35 @@ Use the Platform Orchestrator to apply reviewed infrastructure sizing changes th
 
 Keep the manifest change and deployment history as the record of what you changed. The Orchestrator executes your selected configuration; it does not decide whether a resource is underutilized.
 
-## Initial offline cost estimates
+## Optional infrastructure cost estimates
 
-An upcoming Runner release adds a monthly base-disk estimate to successful manual and Drift observation plan logs. The feature is unreleased and requires a qualified Runner that includes it.
+An upcoming coordinated update adds Infracost estimates to successful manual
+and Drift observation plan logs. The integration is unreleased.
 
-Initial reviewed pricing covers AWS `aws_ebs_volume` `gp3` disks and Azure `azurerm_managed_disk` `Premium_LRS` or `Premium_ZRS` disks with known pricing inputs. Azure custom performance tiers, on-demand bursting and shared-disk charges are excluded. Other configurations, compute, usage charges and GCP prices are outside this initial scope.
+An installation administrator supplies an Infracost API key and enables
+estimates under **Administration → Configuration → Infrastructure costs**.
+Estimates are disabled by default. The key is encrypted in storage, can be
+replaced or removed, and is never returned through the settings API.
 
-The entry reports a known monthly disk subtotal and coverage counts, not the whole Environment's bill or a before/after savings calculation. Unsupported resources remain unpriced, not free. Missing or unknown pricing inputs produce unknown coverage. An all-unpriced plan has no amount.
+Plans are processed locally. Infracost receives price queries containing
+cost-related characteristics, such as region and instance class, rather than
+the full plan. The Runner needs network access to the pricing service; there
+is no offline price catalogue. Pricing failures do not stop a successful plan.
 
-Estimation runs offline with Pogi `0.2.0` and embedded AWS and Azure USD list-price snapshots dated `2026-10-20`. There is no runtime refresh, pricing account, API key or external plan upload. Discounts and tax are excluded. Set `COST_ESTIMATION_ENABLED=false` in the Runner process environment to opt out. Estimation failure does not change plan or observation success.
+AWS, Azure and Google Cloud coverage depends on the pinned calculators and
+resource configuration. Unsupported resources remain unpriced. Usage-dependent
+charges need assumptions, so a partial monthly estimate is not the whole
+Environment's bill or a guarantee of savings.
 
-These estimates support review of eligible disk configurations. They do not provide automatic rightsizing, recommendations or budgets. Confirm savings against your cloud bill and operational requirements.
+These estimates support review of sizing changes. They do not provide automatic
+rightsizing, recommendations or budgets. Confirm savings against your cloud bill
+and operational requirements.
 
 ## References
 
 - [Platform Orchestrator Documentation](https://docs.stellwerk.dev/platform-orchestrator/)
 - [Deployments and plan-only execution](https://docs.stellwerk.dev/platform-orchestrator/docs/deploy/deployments/)
-- [Offline plan cost estimates](https://docs.stellwerk.dev/platform-orchestrator/docs/deploy/offline-plan-cost-estimates/)
+- [Infrastructure cost estimates](https://docs.stellwerk.dev/platform-orchestrator/docs/deploy/infrastructure-cost-estimates/)
 - [Platform Orchestrator Terraform Modules](https://github.com/stellwerk-tf-modules)
 
 <!-- BEGIN_TF_DOCS -->
